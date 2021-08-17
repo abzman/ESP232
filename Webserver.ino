@@ -13,13 +13,18 @@ void www_setup()
   webserver.on("/", handle_OnConnect);
   webserver.on("/set_parm", handle_set_parm);
   webserver.on("/ota", handle_ota);
+  webserver.on("/reboot", reboot_esp);
   webserver.onNotFound(handle_NotFound);
 
   webserver.begin();
+#if !QUIET_MODE
   Serial.println("HTTP server started");
+#endif
 
   if (!MDNS.begin(current_config.hostname)) {
+#if !QUIET_MODE
     Serial.println("Error setting up MDNS responder!");
+#endif
     while (1) {
       delay(1000);
     }
@@ -45,22 +50,40 @@ void handle_ota()
   webserver.send(200, "text/html", SendHTML());
 }
 
+void reboot_esp()
+{
+  webserver.send(200, "text/html", SendHTML());
+  ESP.restart();
+}
+
 void handle_set_parm()
 {
   char hostname[32];
+  char ssid[32];
+  char password[63];
   strncpy(hostname, webserver.arg("hostname").c_str(), 32);
+  strncpy(ssid, webserver.arg("ssid").c_str(), 32);
+  strncpy(password, webserver.arg("password").c_str(), 63);
 
   if (strlen(hostname) > 0 && strlen(hostname) < 31)
   {
     strcpy(current_config.hostname, hostname);
   }
+  if (strlen(password) > 7 && strlen(password) < 62)
+  {
+    strcpy(current_config.password, password);
+    if (strlen(ssid) > 0 && strlen(ssid) < 31)
+    {
+      strcpy(current_config.ssid, ssid);
+    }
+  }
 
   int baud = atoi(webserver.arg("baud").c_str());
   current_config.baudrate = max(1200, min(1000000, baud));
 
-  save_cfg();
-  serial_setup();
   webserver.send(200, "text/html", SendHTML());
+  save_cfg();
+  ESP.restart();
 }
 
 void handle_NotFound()
@@ -109,6 +132,7 @@ String SendHTML()
   {
     ptr += "<a href=\"/ota\">[Enable OTA]</a> ";
   }
+  ptr += "<a href=\"/reboot\">[Reboot Device]</a> ";
   if (config_mode)
   {
     ptr += "--- config mode enabled ---";
@@ -124,6 +148,12 @@ String SendHTML()
   ptr += buf;
   ptr += "<tr><td><label for=\"baud\">Baud:</label></td>";
   sprintf(buf, "<td><input type=\"text\" id=\"baud\" name=\"baud\" value=\"%d\"></td></tr>\n", current_config.baudrate);
+  ptr += buf;
+  ptr += "<tr><td><label for=\"baud\">SSID:</label></td>";
+  sprintf(buf, "<td><input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"%s\"></td></tr>\n", current_config.ssid);
+  ptr += buf;
+  ptr += "<tr><td><label for=\"baud\">password:</label></td>";
+  sprintf(buf, "<td><input type=\"text\" id=\"password\" name=\"password\" value=\"%s\"></td></tr>\n", current_config.password);
   ptr += buf;
   ptr += "<td></td><td><input type=\"submit\" value=\"Write\"></td></table></form>\n";
 

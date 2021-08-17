@@ -18,12 +18,16 @@ const char *sync_str = "ESP232-UPD";
 bool ota_enabled = false;
 bool ota_active = false;
 
-#define CONFIG_MAGIC 0xE1AAFF02
+#define CONFIG_MAGIC 0xE1AAFF04 //change this when the format for the eeprom changes
+#define QUIET_MODE 0 //suppresses all diagnostic messages for devices that are sensitive to that
 typedef struct
 {
   uint32_t magic;
   uint32_t baudrate;
+  uint32_t settings;
   char hostname[32];
+  char ssid[32];
+  char password[63];
 } t_cfg;
 
 
@@ -44,11 +48,13 @@ void setup()
   www_setup();
   serial_setup();
 
+#if !QUIET_MODE
   if (has_loopback())
   {
     ota_setup();
     config_mode = true;
   }
+#endif
 }
 
 bool has_loopback()
@@ -104,7 +110,9 @@ void reset_cfg()
   current_config.magic = CONFIG_MAGIC;
   strcpy(current_config.hostname, "ESP232");
   current_config.baudrate = 115200;
-
+  current_config.settings = SERIAL_8N1;
+  strcpy(current_config.ssid, "g3gg0.de");
+  strcpy(current_config.password, "********");
   save_cfg();
 }
 

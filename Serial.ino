@@ -16,7 +16,7 @@ void serial_setup()
   {
     Serial.end();
   }
-  Serial.begin(current_config.baudrate);
+  Serial.begin(current_config.baudrate, current_config.settings);
 #if defined(ESP8266)
   Serial.swap();
 #elif defined(ESP32)

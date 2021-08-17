@@ -1,12 +1,9 @@
-
-const char *ssid = "g3gg0.de";
-const char *password = "*****";
 bool connecting = false;
 
 
 void wifi_setup()
 {
-  WiFi.begin(ssid, password);
+  WiFi.begin(current_config.ssid, current_config.password);
   connecting = true;
 }
 
@@ -81,7 +78,7 @@ bool wifi_loop(void)
       {
         connecting = true;
         WiFi.mode(WIFI_STA);
-        WiFi.begin(ssid, password);
+        WiFi.begin(current_config.ssid, current_config.password);
         stateCounter = 0;
         break;
       }
@@ -90,8 +87,12 @@ bool wifi_loop(void)
       if (!connecting)
       {
         connecting = true;
-        WiFi.mode(WIFI_STA);
-        WiFi.begin(ssid, password);
+        //WiFi.mode(WIFI_STA);
+        //WiFi.begin(current_config.ssid, current_config.password);
+        
+        //failover to create the network it can't find
+        WiFi.mode(WIFI_AP);
+        WiFi.softAP(current_config.ssid, current_config.password);
         stateCounter = 0;
         break;
       }
