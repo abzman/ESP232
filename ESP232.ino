@@ -28,7 +28,11 @@ typedef struct
 {
   uint32_t magic;
   uint32_t baudrate;
+#ifdef ESP8266
+  SerialConfig settings;
+#else
   uint32_t settings;
+#endif
   char hostname[32];
   char ssid[32];
   char password[63];
