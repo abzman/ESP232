@@ -81,6 +81,11 @@ void handle_set_parm()
   int baud = atoi(webserver.arg("baud").c_str());
   current_config.baudrate = max(1200, min(1000000, baud));
 
+  //broken, need tables to sub in settings based on architecture
+  //int settings = atoi(webserver.arg("settings").c_str());
+  //current_config.settings = settings;
+
+  delay(1000);
   webserver.send(200, "text/html", SendHTML());
   save_cfg();
   ESP.restart();
@@ -149,12 +154,40 @@ String SendHTML()
   ptr += "<tr><td><label for=\"baud\">Baud:</label></td>";
   sprintf(buf, "<td><input type=\"text\" id=\"baud\" name=\"baud\" value=\"%d\"></td></tr>\n", current_config.baudrate);
   ptr += buf;
-  ptr += "<tr><td><label for=\"baud\">SSID:</label></td>";
+  ptr += "<tr><td><label for=\"SSID\">SSID:</label></td>";
   sprintf(buf, "<td><input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"%s\"></td></tr>\n", current_config.ssid);
   ptr += buf;
-  ptr += "<tr><td><label for=\"baud\">password:</label></td>";
+  ptr += "<tr><td><label for=\"password\">password:</label></td>";
   sprintf(buf, "<td><input type=\"text\" id=\"password\" name=\"password\" value=\"%s\"></td></tr>\n", current_config.password);
   ptr += buf;
+  ptr += "<tr><td><label for=\"settings\">Settings:</label></td>";
+  ptr += "<td><select id=\"settings\" name=\"settings\">";
+  ptr += "<option value=\"00\">SERIAL_5N1</option>";
+  ptr += "<option value=\"02\">SERIAL_6N1</option>";
+  ptr += "<option value=\"04\">SERIAL_7N1</option>";
+  ptr += "<option value=\"06\" selected>SERIAL_8N1</option>";
+  ptr += "<option value=\"08\">SERIAL_5N2</option>";
+  ptr += "<option value=\"10\">SERIAL_6N2</option>";
+  ptr += "<option value=\"12\">SERIAL_7N2</option>";
+  ptr += "<option value=\"14\">SERIAL_8N2</option>";
+  ptr += "<option value=\"32\">SERIAL_5E1</option>";
+  ptr += "<option value=\"34\">SERIAL_6E1</option>";
+  ptr += "<option value=\"36\">SERIAL_7E1</option>";
+  ptr += "<option value=\"38\">SERIAL_8E1</option>";
+  ptr += "<option value=\"40\">SERIAL_5E2</option>";
+  ptr += "<option value=\"42\">SERIAL_6E2</option>";
+  ptr += "<option value=\"44\">SERIAL_7E2</option>";
+  ptr += "<option value=\"46\">SERIAL_8E2</option>";
+  ptr += "<option value=\"48\">SERIAL_5O1</option>";
+  ptr += "<option value=\"50\">SERIAL_6O1</option>";
+  ptr += "<option value=\"52\">SERIAL_7O1</option>";
+  ptr += "<option value=\"54\">SERIAL_8O1</option>";
+  ptr += "<option value=\"56\">SERIAL_5O2</option>";
+  ptr += "<option value=\"58\">SERIAL_6O2</option>";
+  ptr += "<option value=\"60\">SERIAL_7O2</option>";
+  ptr += "<option value=\"62\">SERIAL_8O2</option>";
+  ptr += "</select></td></tr>\n";
+  
   ptr += "<td></td><td><input type=\"submit\" value=\"Write\"></td></table></form>\n";
 
   ptr += "</body>\n";
