@@ -81,11 +81,84 @@ void handle_set_parm()
   int baud = atoi(webserver.arg("baud").c_str());
   current_config.baudrate = max(1200, min(1000000, baud));
 
-  //broken, need tables to sub in settings based on architecture
-  //int settings = atoi(webserver.arg("settings").c_str());
-  //current_config.settings = settings;
-
-  delay(1000);
+  int settings = atoi(webserver.arg("settings").c_str());
+  switch (settings) {
+    case 1:
+      current_config.settings = SERIAL_5N1;
+      break;
+    case 2:
+      current_config.settings = SERIAL_6N1;
+      break;
+    case 3:
+      current_config.settings = SERIAL_7N1;
+      break;
+    case 4:
+      current_config.settings = SERIAL_8N1;
+      break;
+    case 5:
+      current_config.settings = SERIAL_5N2;
+      break;
+    case 6:
+      current_config.settings = SERIAL_6N2;
+      break;
+    case 7:
+      current_config.settings = SERIAL_7N2;
+      break;
+    case 8:
+      current_config.settings = SERIAL_8N2;
+      break;
+    case 9:
+      current_config.settings = SERIAL_5E1;
+      break;
+    case 10:
+      current_config.settings = SERIAL_6E1;
+      break;
+    case 11:
+      current_config.settings = SERIAL_7E1;
+      break;
+    case 12:
+      current_config.settings = SERIAL_8E1;
+      break;
+    case 13:
+      current_config.settings = SERIAL_5E2;
+      break;
+    case 14:
+      current_config.settings = SERIAL_6E2;
+      break;
+    case 15:
+      current_config.settings = SERIAL_7E2;
+      break;
+    case 16:
+      current_config.settings = SERIAL_8E2;
+      break;
+    case 17:
+      current_config.settings = SERIAL_5O1;
+      break;
+    case 18:
+      current_config.settings = SERIAL_6O1;
+      break;
+    case 19:
+      current_config.settings = SERIAL_7O1;
+      break;
+    case 20:
+      current_config.settings = SERIAL_8O1;
+      break;
+    case 21:
+      current_config.settings = SERIAL_5O2;
+      break;
+    case 22:
+      current_config.settings = SERIAL_6O2;
+      break;
+    case 23:
+      current_config.settings = SERIAL_7O2;
+      break;
+    case 24:
+      current_config.settings = SERIAL_8O2;
+      break;
+    default:
+      current_config.settings = SERIAL_8N1;
+      break;
+  }
   webserver.send(200, "text/html", SendHTML());
   save_cfg();
   ESP.restart();
@@ -162,32 +235,104 @@ String SendHTML()
   ptr += buf;
   ptr += "<tr><td><label for=\"settings\">Settings:</label></td>";
   ptr += "<td><select id=\"settings\" name=\"settings\">";
-  ptr += "<option value=\"00\">SERIAL_5N1</option>";
-  ptr += "<option value=\"02\">SERIAL_6N1</option>";
-  ptr += "<option value=\"04\">SERIAL_7N1</option>";
-  ptr += "<option value=\"06\" selected>SERIAL_8N1</option>";
-  ptr += "<option value=\"08\">SERIAL_5N2</option>";
-  ptr += "<option value=\"10\">SERIAL_6N2</option>";
-  ptr += "<option value=\"12\">SERIAL_7N2</option>";
-  ptr += "<option value=\"14\">SERIAL_8N2</option>";
-  ptr += "<option value=\"32\">SERIAL_5E1</option>";
-  ptr += "<option value=\"34\">SERIAL_6E1</option>";
-  ptr += "<option value=\"36\">SERIAL_7E1</option>";
-  ptr += "<option value=\"38\">SERIAL_8E1</option>";
-  ptr += "<option value=\"40\">SERIAL_5E2</option>";
-  ptr += "<option value=\"42\">SERIAL_6E2</option>";
-  ptr += "<option value=\"44\">SERIAL_7E2</option>";
-  ptr += "<option value=\"46\">SERIAL_8E2</option>";
-  ptr += "<option value=\"48\">SERIAL_5O1</option>";
-  ptr += "<option value=\"50\">SERIAL_6O1</option>";
-  ptr += "<option value=\"52\">SERIAL_7O1</option>";
-  ptr += "<option value=\"54\">SERIAL_8O1</option>";
-  ptr += "<option value=\"56\">SERIAL_5O2</option>";
-  ptr += "<option value=\"58\">SERIAL_6O2</option>";
-  ptr += "<option value=\"60\">SERIAL_7O2</option>";
-  ptr += "<option value=\"62\">SERIAL_8O2</option>";
+  ptr += "<option value=\"01\"";
+  if (current_config.settings == SERIAL_5N1)
+    ptr += " selected";
+  ptr += ">SERIAL_5N1</option>";
+  ptr += "<option value=\"02\"";
+  if (current_config.settings == SERIAL_6N1)
+    ptr += " selected";
+  ptr += ">SERIAL_6N1</option>";
+  ptr += "<option value=\"03\"";
+  if (current_config.settings == SERIAL_7N1)
+    ptr += " selected";
+  ptr += ">SERIAL_7N1</option>";
+  ptr += "<option value=\"04\"";
+  if (current_config.settings == SERIAL_8N1)
+    ptr += " selected";
+  ptr += ">SERIAL_8N1</option>";
+  ptr += "<option value=\"05\"";
+  if (current_config.settings == SERIAL_5N2)
+    ptr += " selected";
+  ptr += ">SERIAL_5N2</option>";
+  ptr += "<option value=\"06\"";
+  if (current_config.settings == SERIAL_6N2)
+    ptr += " selected";
+  ptr += ">SERIAL_6N2</option>";
+  ptr += "<option value=\"07\"";
+  if (current_config.settings == SERIAL_7N2)
+    ptr += " selected";
+  ptr += ">SERIAL_7N2</option>";
+  ptr += "<option value=\"08\"";
+  if (current_config.settings == SERIAL_8N2)
+    ptr += " selected";
+  ptr += ">SERIAL_8N2</option>";
+  ptr += "<option value=\"09\"";
+  if (current_config.settings == SERIAL_5E1)
+    ptr += " selected";
+  ptr += ">SERIAL_5E1</option>";
+  ptr += "<option value=\"10\"";
+  if (current_config.settings == SERIAL_6E1)
+    ptr += " selected";
+  ptr += ">SERIAL_6E1</option>";
+  ptr += "<option value=\"11\"";
+  if (current_config.settings == SERIAL_7E1)
+    ptr += " selected";
+  ptr += ">SERIAL_7E1</option>";
+  ptr += "<option value=\"12\"";
+  if (current_config.settings == SERIAL_8E1)
+    ptr += " selected";
+  ptr += ">SERIAL_8E1</option>";
+  ptr += "<option value=\"13\"";
+  if (current_config.settings == SERIAL_5E2)
+    ptr += " selected";
+  ptr += ">SERIAL_5E2</option>";
+  ptr += "<option value=\"14\"";
+  if (current_config.settings == SERIAL_6E2)
+    ptr += " selected";
+  ptr += ">SERIAL_6E2</option>";
+  ptr += "<option value=\"15\"";
+  if (current_config.settings == SERIAL_7E2)
+    ptr += " selected";
+  ptr += ">SERIAL_7E2</option>";
+  ptr += "<option value=\"16\"";
+  if (current_config.settings == SERIAL_8E2)
+    ptr += " selected";
+  ptr += ">SERIAL_8E2</option>";
+  ptr += "<option value=\"17\"";
+  if (current_config.settings == SERIAL_5O1)
+    ptr += " selected";
+  ptr += ">SERIAL_5O1</option>";
+  ptr += "<option value=\"18\"";
+  if (current_config.settings == SERIAL_6O1)
+    ptr += " selected";
+  ptr += ">SERIAL_6O1</option>";
+  ptr += "<option value=\"19\"";
+  if (current_config.settings == SERIAL_7O1)
+    ptr += " selected";
+  ptr += ">SERIAL_7O1</option>";
+  ptr += "<option value=\"20\"";
+  if (current_config.settings == SERIAL_8O1)
+    ptr += " selected";
+  ptr += ">SERIAL_8O1</option>";
+  ptr += "<option value=\"21\"";
+  if (current_config.settings == SERIAL_5O2)
+    ptr += " selected";
+  ptr += ">SERIAL_5O2</option>";
+  ptr += "<option value=\"22\"";
+  if (current_config.settings == SERIAL_6O2)
+    ptr += " selected";
+  ptr += ">SERIAL_6O2</option>";
+  ptr += "<option value=\"23\"";
+  if (current_config.settings == SERIAL_7O2)
+    ptr += " selected";
+  ptr += ">SERIAL_7O2</option>";
+  ptr += "<option value=\"24\"";
+  if (current_config.settings == SERIAL_8O2)
+    ptr += " selected";
+  ptr += ">SERIAL_8O2</option>";
   ptr += "</select></td></tr>\n";
-  
+
   ptr += "<td></td><td><input type=\"submit\" value=\"Write\"></td></table></form>\n";
 
   ptr += "</body>\n";
