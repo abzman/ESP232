@@ -23,7 +23,6 @@ bool ota_active = false;
 #define MIN  ((__TIME__[3]%16)*16+(__TIME__[4]%16))
 #define SEC  ((__TIME__[6]%16)*16+(__TIME__[7]%16))
 #define CONFIG_MAGIC (DAY * 0x1000000 + HOUR * 0x10000 + MIN * 0x100 + SEC) //ensures a eeprom is reloaded pretty much every compile
-#define QUIET_MODE 0 //suppresses all diagnostic messages for devices that are sensitive to that
 typedef struct
 {
   uint32_t magic;
@@ -36,6 +35,7 @@ typedef struct
   char hostname[32];
   char ssid[32];
   char password[63];
+  bool quiet;
 } t_cfg;
 
 
@@ -56,13 +56,14 @@ void setup()
   www_setup();
   serial_setup();
 
-#if !QUIET_MODE
-  if (has_loopback())
+  if (!current_config.quiet)
   {
-    ota_setup();
-    config_mode = true;
+    if (has_loopback())
+    {
+      ota_setup();
+      config_mode = true;
+    }
   }
-#endif
 }
 
 bool has_loopback()
@@ -121,6 +122,7 @@ void reset_cfg()
   current_config.settings = SERIAL_8N1;
   strcpy(current_config.ssid, "g3gg0.de");
   strcpy(current_config.password, "********");
+  current_config.quiet = 0; //suppresses all diagnostic messages for devices that are sensitive to that (when set to 1)
   save_cfg();
 }
 

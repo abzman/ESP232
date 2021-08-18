@@ -89,7 +89,7 @@ bool wifi_loop(void)
         connecting = true;
         //WiFi.mode(WIFI_STA);
         //WiFi.begin(current_config.ssid, current_config.password);
-        
+
         //failover to create the network it can't find
         WiFi.mode(WIFI_AP);
         WiFi.softAP(current_config.ssid, current_config.password);

@@ -17,14 +17,16 @@ void www_setup()
   webserver.onNotFound(handle_NotFound);
 
   webserver.begin();
-#if !QUIET_MODE
-  Serial.println("HTTP server started");
-#endif
+  if (!current_config.quiet)
+  {
+    Serial.println("HTTP server started");
+  }
 
   if (!MDNS.begin(current_config.hostname)) {
-#if !QUIET_MODE
-    Serial.println("Error setting up MDNS responder!");
-#endif
+    if (!current_config.quiet)
+    {
+      Serial.println("Error setting up MDNS responder!");
+    }
     while (1) {
       delay(1000);
     }
@@ -159,6 +161,10 @@ void handle_set_parm()
       current_config.settings = SERIAL_8N1;
       break;
   }
+
+  int quiet = atoi(webserver.arg("quiet").c_str());
+  current_config.quiet = quiet;
+
   webserver.send(200, "text/html", SendHTML());
   save_cfg();
   ESP.restart();
@@ -331,6 +337,18 @@ String SendHTML()
   if (current_config.settings == SERIAL_8O2)
     ptr += " selected";
   ptr += ">SERIAL_8O2</option>";
+  ptr += "</select></td></tr>\n";
+
+  ptr += "<tr><td><label for=\"quiet\">Suppress serial debug?:</label></td>";
+  ptr += "<td><select id=\"quiet\" name=\"quiet\">";
+  ptr += "<option value=\"1\"";
+  if (current_config.quiet == 1)
+    ptr += " selected";
+  ptr += ">Yes</option>";
+  ptr += "<option value=\"0\"";
+  if (current_config.quiet == 0)
+    ptr += " selected";
+  ptr += ">No</option>";
   ptr += "</select></td></tr>\n";
 
   ptr += "<td></td><td><input type=\"submit\" value=\"Write\"></td></table></form>\n";
