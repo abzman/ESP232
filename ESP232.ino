@@ -18,7 +18,11 @@ const char *sync_str = "ESP232-UPD";
 bool ota_enabled = false;
 bool ota_active = false;
 
-#define CONFIG_MAGIC 0xE1AAFF04 //change this when the format for the eeprom changes
+#define DAY  ((__DATE__[4]%16)*16+(__DATE__[5]%16))
+#define HOUR ((__TIME__[0]%16)*16+(__TIME__[1]%16))
+#define MIN  ((__TIME__[3]%16)*16+(__TIME__[4]%16))
+#define SEC  ((__TIME__[6]%16)*16+(__TIME__[7]%16))
+#define CONFIG_MAGIC (DAY * 0x1000000 + HOUR * 0x10000 + MIN * 0x100 + SEC) //ensures a eeprom is reloaded pretty much every compile
 #define QUIET_MODE 0 //suppresses all diagnostic messages for devices that are sensitive to that
 typedef struct
 {
