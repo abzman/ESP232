@@ -18,7 +18,8 @@ void serial_setup()
   }
   Serial.begin(current_config.baudrate, current_config.settings);
 #if defined(ESP8266)
-  Serial.swap();
+  //this is to be available if being flashed on a jee-link module that used this configuration
+  //Serial.swap();
 #elif defined(ESP32)
 #else
 #error "This ain't a ESP8266 or ESP32, dumbo!"

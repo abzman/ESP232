@@ -21,7 +21,7 @@ void www_setup()
   {
     Serial.println("HTTP server started");
   }
-
+/*
   if (!MDNS.begin(current_config.hostname)) {
     if (!current_config.quiet)
     {
@@ -33,6 +33,7 @@ void www_setup()
   }
   MDNS.addService("http", "tcp", 80);
   MDNS.addService("telnet", "tcp", 23);
+  */
 }
 
 bool www_loop()

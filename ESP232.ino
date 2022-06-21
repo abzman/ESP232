@@ -52,9 +52,9 @@ void setup()
     reset_cfg();
   }
 
+  serial_setup();
   wifi_setup();
   www_setup();
-  serial_setup();
 
   if (!current_config.quiet)
   {

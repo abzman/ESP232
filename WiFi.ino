@@ -3,7 +3,11 @@ bool connecting = false;
 
 void wifi_setup()
 {
+  WiFi.mode(WIFI_STA);
   WiFi.begin(current_config.ssid, current_config.password);
+  //Serial.println(current_config.ssid);
+  //Serial.println(current_config.password);
+
   connecting = true;
 }
 
@@ -13,12 +17,46 @@ bool wifi_loop(void)
   int curTime = millis();
   static int nextTime = 0;
   static int stateCounter = 0;
+  static int retries = 0;
 
   if (nextTime > curTime)
   {
     return false;
   }
+  //Serial.println(status);
+  //Serial.println(stateCounter);
+  //Serial.println(retries);
+  if (retries == 10)
+  {
 
+    uint32_t chipId = 0;
+#ifdef ESP8266
+
+    chipId = ESP.getChipId();
+
+#endif
+
+#ifdef ESP32
+
+    for (int i = 0; i < 17; i = i + 8) {
+      chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+    }
+#endif
+    //failover to create a neutral network based on the esp mac
+    WiFi.mode(WIFI_AP);
+    String stringOne, stringThree;
+    stringOne = String("esp232 ");
+    stringThree = String();
+    stringThree = stringOne  + chipId;
+    WiFi.softAP(stringThree);
+    Serial.println("blocking ap host");
+    ++retries;
+    return false;
+  }
+  if (retries > 10)
+  {
+    return false;
+  }
   /* standard refresh time */
   nextTime = curTime + 100;
 
@@ -26,6 +64,7 @@ bool wifi_loop(void)
   {
     case WL_CONNECTED:
       connecting = false;
+      retries = 0;
       break;
 
     case WL_CONNECTION_LOST:
@@ -58,15 +97,17 @@ bool wifi_loop(void)
     case WL_DISCONNECTED:
       if (!connecting)
       {
-        connecting = false;
-        WiFi.disconnect();
-        WiFi.mode(WIFI_OFF);
+        connecting = true;
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(current_config.ssid, current_config.password);
+        stateCounter = 0;
         break;
       }
       else
       {
         if (++stateCounter > 50)
         {
+          ++retries;
           connecting = false;
           WiFi.disconnect();
           WiFi.mode(WIFI_OFF);
@@ -90,9 +131,26 @@ bool wifi_loop(void)
         //WiFi.mode(WIFI_STA);
         //WiFi.begin(current_config.ssid, current_config.password);
 
-        //failover to create the network it can't find
+        uint32_t chipId = 0;
+#ifdef ESP8266
+
+        chipId = ESP.getChipId();
+
+#endif
+
+#ifdef ESP32
+
+        for (int i = 0; i < 17; i = i + 8) {
+          chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+        }
+#endif
+        //failover to create a neutral network based on the esp mac
         WiFi.mode(WIFI_AP);
-        WiFi.softAP(current_config.ssid, current_config.password);
+        String stringOne, stringThree;
+        stringOne = String("esp232 ");
+        stringThree = String();
+        stringThree = stringOne  + chipId;
+        WiFi.softAP(stringThree);
         stateCounter = 0;
         break;
       }
