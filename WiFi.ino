@@ -48,7 +48,7 @@ bool wifi_loop(void)
     stringOne = String("esp232 ");
     stringThree = String();
     stringThree = stringOne  + chipId;
-    WiFi.softAP(stringThree);
+    WiFi.softAP(stringThree.c_str());
     Serial.println("blocking ap host");
     ++retries;
     return false;
@@ -150,7 +150,7 @@ bool wifi_loop(void)
         stringOne = String("esp232 ");
         stringThree = String();
         stringThree = stringOne  + chipId;
-        WiFi.softAP(stringThree);
+        WiFi.softAP(stringThree.c_str());
         stateCounter = 0;
         break;
       }

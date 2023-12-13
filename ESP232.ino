@@ -52,8 +52,8 @@ void setup()
     reset_cfg();
   }
 
-  serial_setup();
   wifi_setup();
+  serial_setup();
   www_setup();
 
   if (!current_config.quiet)
